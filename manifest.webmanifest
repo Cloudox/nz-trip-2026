@@ -1,0 +1,16 @@
+{
+  "name": "新西兰南岛 13 天行程助手",
+  "short_name": "南岛行程",
+  "description": "2026.9.24–10.7 新西兰南岛 13 天逐日行程、关键电话地址、冲突提醒与出发前清单（离线可用）",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef3f6",
+  "theme_color": "#0d6e7a",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
