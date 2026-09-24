@@ -352,11 +352,61 @@ const TRIP = {
     { n: 10, level: "high", title: "禁行路段不是「不能开」，是保险不赔", detail: "开进去不违法，但出事故车损险与第三者险全部失效，拖车费动辄 NZ$1,000 起。" },
   ],
 
-  /* 机票 */
+  /* 机票（确认函核对版） */
   flights: [
-    { dir: "去程", date: "9/24 20:05", text: "香港 → 墨尔本中转 3.5h → 9/25 16:25 基督城", note: "¥6,694/人 · 中转不出机场，但澳洲过境签 771 批准信必查，纸质件随身" },
-    { dir: "回程", date: "10/7 06:20", text: "基督城 → 悉尼中转 3h → 10/7 17:55 香港", note: "04:00 到机场，还车预留 20 分钟" },
+    { dir: "去程 · 2 段", date: "9/24 20:05", text: "QF030 香港 T1 → 墨尔本 T2（9/25 07:20）→ QF5563 / 捷星 JQ171 → 基督城（9/25 16:25）", note: "中转 3h45m · ⚠️ 行李不直挂，墨尔本需提取行李重新托运 · ¥6,694/人" },
+    { dir: "回程 · 2 段", date: "10/7 06:20", text: "QF168 基督城 → 墨尔本 T2（08:10）→ QF029 → 香港 T1（17:55）", note: "中转 3h05m · ✅ 行李直挂，中转不用取行李" },
   ],
+
+  /* 航班信息（按确认函逐段核对） */
+  flightInfo: {
+    outbound: {
+      title: "🛫 去程 · 香港 → 基督城（9/24–9/25）",
+      bagOk: false,
+      transfer: "墨尔本机场 T2 · 3 小时 45 分钟（07:20 落地 → 11:05 起飞）",
+      baggage: "⚠️ 行李不直挂（Baggage not checked through）——必须在墨尔本自己提取行李、重新托运",
+      segments: [
+        {
+          seg: "香港 → 墨尔本", flight: "QF030",
+          dep: "9/24 周四 20:05", depAirport: "香港国际机场 T1（HKG）",
+          arr: "9/25 周五 07:20", arrAirport: "墨尔本机场 T2（MEL）",
+          airline: "澳洲航空 Qantas Airways QF030",
+        },
+        {
+          seg: "墨尔本 → 基督城", flight: "QF5563 / JQ171",
+          dep: "9/25 周五 11:05", depAirport: "墨尔本机场 T2（MEL）",
+          arr: "9/25 周五 16:25", arrAirport: "克赖斯特彻奇国际机场（CHC）",
+          airline: "澳洲航空 QF5563 · 捷星航空 JQ171（代码共享）",
+        },
+      ],
+    },
+    return: {
+      title: "🛬 回程 · 基督城 → 香港（10/7）",
+      bagOk: true,
+      transfer: "墨尔本机场 T2 · 3 小时 5 分钟（08:10 落地 → 11:15 起飞）",
+      baggage: "✅ 行李直挂（Baggage checked through）——基督城直接挂到香港，中转不用取行李",
+      segments: [
+        {
+          seg: "基督城 → 墨尔本", flight: "QF168",
+          dep: "10/7 周三 06:20", depAirport: "克赖斯特彻奇国际机场（CHC）",
+          arr: "10/7 周三 08:10", arrAirport: "墨尔本机场 T2（MEL）",
+          airline: "澳洲航空 Qantas Airways QF168",
+        },
+        {
+          seg: "墨尔本 → 香港", flight: "QF029",
+          dep: "10/7 周三 11:15", depAirport: "墨尔本机场 T2（MEL）",
+          arr: "10/7 周三 17:55", arrAirport: "香港国际机场 T1（HKG）",
+          airline: "澳洲航空 Qantas Airways QF029",
+        },
+      ],
+    },
+    transferTips: [
+      "行李不直挂 = 落地墨尔本后，先跟「Baggage / 行李」指示牌到转盘提取全部行李",
+      "过境澳洲：走转机通道，澳洲过境签 771 批准信纸质件随身备查",
+      "提取行李后到国内出发层（QF5563 实际由捷星 JQ171 执飞）重新办理托运",
+      "国内段托运一般提前 45–60 分钟截止，3h45m 够用但别磨蹭，优先办托运再逛",
+    ],
+  },
 
   /* 逐日行程 */
   days: [
@@ -364,8 +414,10 @@ const TRIP = {
       id: 1, iso: "2026-09-24", date: "9/24", weekday: "周四",
       title: "香港 → 墨尔本 → 基督城（跨日）", stay: "机上",
       items: [
-        { time: "20:05", tag: "flight", title: "香港起飞 → 墨尔本中转 3.5h",
-          notes: ["提前 3 小时到机场", "中转不出机场，但澳洲过境签 771 批准信必查，纸质件随身"] },
+        { time: "20:05", tag: "flight", title: "QF030 香港起飞（T1）→ 墨尔本 T2",
+          notes: ["提前 3 小时到机场（建议 17:00 前到 T1）", "9/25 07:20 落地墨尔本 T2",
+                  "重要：墨尔本中转「行李不直挂」，必须自己取行李重新托运",
+                  "澳洲过境签 771 批准信必查，纸质件随身", "第二段 9/25 11:05 QF5563 / 捷星 JQ171（代码共享）→ 基督城 16:25"] },
       ],
     },
     {
@@ -663,14 +715,15 @@ const TRIP = {
     },
     {
       id: 14, iso: "2026-10-07", date: "10/7", weekday: "周三",
-      title: "06:20 基督城 → 悉尼 → 17:55 香港 · 返程", stay: "返程",
+      title: "06:20 基督城 → 墨尔本 → 17:55 香港 · 返程", stay: "返程",
       items: [
         { time: "03:00", tag: "alert", title: "起床", notes: [] },
         { time: "03:30", tag: "drive", title: "出发去机场",
           notes: ["民宿 → CHC 约 10min，还车预留 20 分钟"] },
         { time: "04:00", tag: "flight", title: "还车 + 值机 + 安检",
           notes: ["国际航班提前 2–2.5h，06:20 的飞机 04:00 到是安全的"] },
-        { time: "06:20", tag: "flight", title: "CHC 起飞 → 悉尼中转 3h → 17:55 抵达香港", notes: [] },
+        { time: "06:20", tag: "flight", title: "QF168 CHC 起飞 → 墨尔本 T2（08:10）→ QF029（11:15）→ 17:55 抵达香港",
+          notes: ["中转 3 小时 5 分钟，行李直挂、中转不用取行李", "澳洲过境签再核一次"] },
       ],
     },
   ],
@@ -978,7 +1031,7 @@ const TRIP = {
   }
 
   /* ---------- 视图：速查 ---------- */
-  const SEGS = [["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
+  const SEGS = [["flight", "✈ 航班"], ["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
 
   function segHtml() {
     return `<div class="seg">${SEGS.map(([k, label]) =>
@@ -1040,8 +1093,32 @@ const TRIP = {
       </div>`;
   }
 
+  function segFlight() {
+    const F = TRIP.flightInfo;
+    const block = (sec) => `
+      <div class="card">
+        <div class="qname" style="color:var(--brand)">${esc(sec.title)}</div>
+        ${sec.segments.map(s => `
+          <div class="qrow">
+            <div class="qname">${esc(s.seg)} <span class="qbadge">${esc(s.flight)}</span></div>
+            <div class="qsub">🛫 出发　${esc(s.dep)}<br>　　　　${esc(s.depAirport)}</div>
+            <div class="qsub">🛬 到达　${esc(s.arr)}<br>　　　　${esc(s.arrAirport)}</div>
+            <div class="qnote">航司：${esc(s.airline)}</div>
+          </div>`).join("")}
+        <div class="qrow">
+          <div class="qsub">⏱ 中转：${esc(sec.transfer)}</div>
+          <div class="qnote" style="color:${sec.bagOk ? "#2f9e77" : "#a02c2c"};font-weight:700;margin-top:4px">${esc(sec.baggage)}</div>
+        </div>
+      </div>`;
+    return `<div class="sec-title">航班信息（确认函版）</div>
+      ${block(F.outbound)}
+      ${block(F.return)}
+      <div class="sec-title">墨尔本中转操作要点（去程，行李不直挂）</div>
+      <div class="card"><ul class="notes" style="margin-top:0">${F.transferTips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>`;
+  }
+
   function viewQuick() {
-    const body = { tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
+    const body = { flight: segFlight, tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
     return segHtml() + body;
   }
 
@@ -1122,7 +1199,11 @@ const TRIP = {
   /* ---------- events ---------- */
   function viewFromHash() {
     const h = (location.hash || "").replace("#", "");
-    return ["days", "quick", "alert", "check"].indexOf(h) >= 0 ? h : "days";
+    const parts = h.split("-");
+    let v = parts[0] || "";
+    if (["days", "quick", "alert", "check"].indexOf(v) < 0) v = "days";
+    if (v === "quick" && parts[1] && SEGS.some(s => s[0] === parts[1])) state.seg = parts[1];
+    return v;
   }
   window.addEventListener("hashchange", () => {
     state.view = viewFromHash();

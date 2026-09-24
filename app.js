@@ -158,7 +158,7 @@
   }
 
   /* ---------- 视图：速查 ---------- */
-  const SEGS = [["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
+  const SEGS = [["flight", "✈ 航班"], ["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
 
   function segHtml() {
     return `<div class="seg">${SEGS.map(([k, label]) =>
@@ -220,8 +220,32 @@
       </div>`;
   }
 
+  function segFlight() {
+    const F = TRIP.flightInfo;
+    const block = (sec) => `
+      <div class="card">
+        <div class="qname" style="color:var(--brand)">${esc(sec.title)}</div>
+        ${sec.segments.map(s => `
+          <div class="qrow">
+            <div class="qname">${esc(s.seg)} <span class="qbadge">${esc(s.flight)}</span></div>
+            <div class="qsub">🛫 出发　${esc(s.dep)}<br>　　　　${esc(s.depAirport)}</div>
+            <div class="qsub">🛬 到达　${esc(s.arr)}<br>　　　　${esc(s.arrAirport)}</div>
+            <div class="qnote">航司：${esc(s.airline)}</div>
+          </div>`).join("")}
+        <div class="qrow">
+          <div class="qsub">⏱ 中转：${esc(sec.transfer)}</div>
+          <div class="qnote" style="color:${sec.bagOk ? "#2f9e77" : "#a02c2c"};font-weight:700;margin-top:4px">${esc(sec.baggage)}</div>
+        </div>
+      </div>`;
+    return `<div class="sec-title">航班信息（确认函版）</div>
+      ${block(F.outbound)}
+      ${block(F.return)}
+      <div class="sec-title">墨尔本中转操作要点（去程，行李不直挂）</div>
+      <div class="card"><ul class="notes" style="margin-top:0">${F.transferTips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>`;
+  }
+
   function viewQuick() {
-    const body = { tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
+    const body = { flight: segFlight, tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
     return segHtml() + body;
   }
 
@@ -302,7 +326,11 @@
   /* ---------- events ---------- */
   function viewFromHash() {
     const h = (location.hash || "").replace("#", "");
-    return ["days", "quick", "alert", "check"].indexOf(h) >= 0 ? h : "days";
+    const parts = h.split("-");
+    let v = parts[0] || "";
+    if (["days", "quick", "alert", "check"].indexOf(v) < 0) v = "days";
+    if (v === "quick" && parts[1] && SEGS.some(s => s[0] === parts[1])) state.seg = parts[1];
+    return v;
   }
   window.addEventListener("hashchange", () => {
     state.view = viewFromHash();
