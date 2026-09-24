@@ -881,6 +881,8 @@ const TRIP = {
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
   };
 
+  const APP_VERSION = "v2 · 9/24 12:20";
+
   const TAG_TEXT = {
     p0: "必到 · 迟到不退", p1: "景点", meal: "餐食", drive: "行车",
     stay: "住宿", flight: "航班", alert: "注意", tip: "提示", call: "致电确认",
@@ -1114,7 +1116,8 @@ const TRIP = {
       ${block(F.outbound)}
       ${block(F.return)}
       <div class="sec-title">墨尔本中转操作要点（去程，行李不直挂）</div>
-      <div class="card"><ul class="notes" style="margin-top:0">${F.transferTips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>`;
+      <div class="card"><ul class="notes" style="margin-top:0">${F.transferTips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>
+      <div class="qnote" style="text-align:center;margin:2px 0 10px">数据版本 ${esc(APP_VERSION)} · 看不到航班分段就下拉刷新一次</div>`;
   }
 
   function viewQuick() {
@@ -1268,8 +1271,29 @@ const TRIP = {
 
   /* ---------- 离线：注册 Service Worker ---------- */
   if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) {
+    let allowReload = false, didReload = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      // 只在"发现新版本"时刷新，避免首次安装也刷新
+      if (allowReload && !didReload) { didReload = true; location.reload(); }
+    });
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("sw.js").catch(() => {});
+      navigator.serviceWorker.register("sw.js").then(reg => {
+        reg.update().catch(() => {});
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          allowReload = true;
+          reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        }
+        reg.addEventListener("updatefound", () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener("statechange", () => {
+            if (nw.state === "installed" && navigator.serviceWorker.controller) {
+              allowReload = true;
+              nw.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
+        });
+      }).catch(() => {});
     });
   }
 
