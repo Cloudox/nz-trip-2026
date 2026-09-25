@@ -399,6 +399,16 @@ const TRIP = {
     },
   ],
 
+  /* 同行成员 · 当地电话 */
+  members: [
+    { team: "1 队", name: "欧霄", tel: "+64 274969330" },
+    { team: "1 队", name: "亚姝", tel: "+64 274978853" },
+    { team: "2 队", name: "铭鑫", tel: "+64275190183" },
+    { team: "2 队", name: "露露", tel: "+64 274952127" },
+    { team: "3 队", name: "何锐", tel: "+64 275168464" },
+    { team: "3 队", name: "雯珊", tel: "+64274958534" },
+  ],
+
   /* 关键电话与地址速查 */
   contacts: [
     { name: "凯库拉观鲸（3人/5人）", addr: "Air Kaikoura Aero Club, 627 SH1, Peketa, Kaikōura 7374", tel: "+64 3 319 6579", report: "08:30 / 09:30", note: "不是 Kaikoura Airport，更不是码头；出发前 1 小时务必致电确认天气" },

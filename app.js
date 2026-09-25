@@ -8,7 +8,7 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
   };
 
-  const APP_VERSION = "v2 · 9/24 12:20";
+  const APP_VERSION = "v3 · 9/25";
 
   const TAG_TEXT = {
     p0: "必到 · 迟到不退", p1: "景点", meal: "餐食", drive: "行车",
@@ -160,11 +160,33 @@
   }
 
   /* ---------- 视图：速查 ---------- */
-  const SEGS = [["flight", "✈ 航班"], ["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
+  const SEGS = [["flight", "✈ 航班"], ["team", "👥 队员"], ["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
 
   function segHtml() {
     return `<div class="seg">${SEGS.map(([k, label]) =>
       `<button data-seg="${k}" class="${state.seg === k ? "on" : ""}">${label}</button>`).join("")}</div>`;
+  }
+
+  function segTeam() {
+    const teams = {};
+    TRIP.members.forEach(m => { (teams[m.team] = teams[m.team] || []).push(m); });
+    const cards = Object.keys(teams).map(t => `
+      <div class="card">
+        <div class="qname" style="color:var(--brand);margin-bottom:2px">${esc(t)}</div>
+        ${teams[t].map(m => `
+          <div class="qrow">
+            <div class="qname">${esc(m.name)}</div>
+            <div class="act-row">
+              <a class="act tel" href="${esc(telHref(m.tel))}">📞 ${esc(m.tel)}</a>
+              <a class="act" href="sms:${esc(telHref(m.tel).replace("tel:", ""))}">✉ 短信</a>
+              <button class="act" data-copy="${esc(m.tel)}">复制</button>
+            </div>
+          </div>`).join("")}
+      </div>`).join("");
+
+    return `<div class="sec-title">同行成员 · 当地电话</div>
+      ${cards}
+      <div class="warnbox">点号码直接拨，点「短信」发当地短信。分开行动时用得上——集合点、集合时间临时变动第一时间互相通知。</div>`;
   }
 
   function segTel() {
@@ -248,7 +270,7 @@
   }
 
   function viewQuick() {
-    const body = { flight: segFlight, tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
+    const body = { flight: segFlight, team: segTeam, tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
     return segHtml() + body;
   }
 

@@ -728,6 +728,16 @@ const TRIP = {
     },
   ],
 
+  /* 同行成员 · 当地电话 */
+  members: [
+    { team: "1 队", name: "欧霄", tel: "+64 274969330" },
+    { team: "1 队", name: "亚姝", tel: "+64 274978853" },
+    { team: "2 队", name: "铭鑫", tel: "+64275190183" },
+    { team: "2 队", name: "露露", tel: "+64 274952127" },
+    { team: "3 队", name: "何锐", tel: "+64 275168464" },
+    { team: "3 队", name: "雯珊", tel: "+64274958534" },
+  ],
+
   /* 关键电话与地址速查 */
   contacts: [
     { name: "凯库拉观鲸（3人/5人）", addr: "Air Kaikoura Aero Club, 627 SH1, Peketa, Kaikōura 7374", tel: "+64 3 319 6579", report: "08:30 / 09:30", note: "不是 Kaikoura Airport，更不是码头；出发前 1 小时务必致电确认天气" },
@@ -881,7 +891,7 @@ const TRIP = {
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
   };
 
-  const APP_VERSION = "v2 · 9/24 12:20";
+  const APP_VERSION = "v3 · 9/25";
 
   const TAG_TEXT = {
     p0: "必到 · 迟到不退", p1: "景点", meal: "餐食", drive: "行车",
@@ -1033,11 +1043,33 @@ const TRIP = {
   }
 
   /* ---------- 视图：速查 ---------- */
-  const SEGS = [["flight", "✈ 航班"], ["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
+  const SEGS = [["flight", "✈ 航班"], ["team", "👥 队员"], ["tel", "电话 / 地址"], ["stay", "住宿"], ["meal", "餐食"], ["drive", "自驾租车"]];
 
   function segHtml() {
     return `<div class="seg">${SEGS.map(([k, label]) =>
       `<button data-seg="${k}" class="${state.seg === k ? "on" : ""}">${label}</button>`).join("")}</div>`;
+  }
+
+  function segTeam() {
+    const teams = {};
+    TRIP.members.forEach(m => { (teams[m.team] = teams[m.team] || []).push(m); });
+    const cards = Object.keys(teams).map(t => `
+      <div class="card">
+        <div class="qname" style="color:var(--brand);margin-bottom:2px">${esc(t)}</div>
+        ${teams[t].map(m => `
+          <div class="qrow">
+            <div class="qname">${esc(m.name)}</div>
+            <div class="act-row">
+              <a class="act tel" href="${esc(telHref(m.tel))}">📞 ${esc(m.tel)}</a>
+              <a class="act" href="sms:${esc(telHref(m.tel).replace("tel:", ""))}">✉ 短信</a>
+              <button class="act" data-copy="${esc(m.tel)}">复制</button>
+            </div>
+          </div>`).join("")}
+      </div>`).join("");
+
+    return `<div class="sec-title">同行成员 · 当地电话</div>
+      ${cards}
+      <div class="warnbox">点号码直接拨，点「短信」发当地短信。分开行动时用得上——集合点、集合时间临时变动第一时间互相通知。</div>`;
   }
 
   function segTel() {
@@ -1121,7 +1153,7 @@ const TRIP = {
   }
 
   function viewQuick() {
-    const body = { flight: segFlight, tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
+    const body = { flight: segFlight, team: segTeam, tel: segTel, stay: segStay, meal: segMeal, drive: segDrive }[state.seg]();
     return segHtml() + body;
   }
 
